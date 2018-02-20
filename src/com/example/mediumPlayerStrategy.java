@@ -7,7 +7,7 @@ import java.util.*;
  * player will never pick a card up from the discard pile regardless of whether or not the discarded card benefits
  *      the player's current melds
  */
-public class mediumPlayerStrategy implements PlayerStrategy{
+public class mediumPlayerStrategy implements PlayerStrategy {
 
     private Set<Card> cardsInHand = new HashSet<>();
     private SetMeld setMeld;
