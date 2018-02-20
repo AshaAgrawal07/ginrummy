@@ -133,7 +133,7 @@ public class hardPlayerStrategy implements PlayerStrategy{
      */
     @Override
     public void opponentEndTurnFeedback(boolean drewDiscard, Card previousDiscardTop, Card opponentDiscarded) {
-        //does nothing
+        
     }
 
     /**
