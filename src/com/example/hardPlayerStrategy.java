@@ -5,7 +5,8 @@ import java.util.*;
 /**
  * In this strategy, the player does care about the opponent's moves or feedback
  * the player will also be keeping track of the remaining cards from the pick-up pile to see which move will be most
- *      beneficial to itself, but not to its opponent
+ *      beneficial to itself, but not to its opponent (its kind of guessed since player doesn't see opponent's melds
+ *      until the end of the round)
  * player will also try to discard the least beneficial card to the opponent to the discard-pile as long as it does not
  *      compromise its own melds (best meld that it currently has)
  *taking point values into account, if there are multiple cards that can be discarded (which follows the restriction
@@ -18,8 +19,9 @@ public class hardPlayerStrategy implements PlayerStrategy{
     private RunMeld runMeld;
     private Set<Meld> opponentMelds;
     private Set<Card> opponentHand;
-    private SetMeld opponentSetMeld;
-    private RunMeld opponentRunMeld;
+    private Set<Card> remainingDeck = Card.getAllCards();
+    private Card previousDiscardedCard;
+    private Card opponentDiscardedCard;
     /**
      * Called by the game engine for each player at the beginning of each round to receive and
      * process their initial hand dealt.
@@ -31,6 +33,8 @@ public class hardPlayerStrategy implements PlayerStrategy{
         Card[] handAsArray = hand.toArray(new Card[hand.size()]);
         Arrays.sort(handAsArray);
         cardsInHand = (Set)(Arrays.asList(handAsArray));
+
+        remainingDeck.removeAll(hand);
 
         setMeld = new SetMeld(hand);
         setMeld.setMelds();
@@ -55,6 +59,10 @@ public class hardPlayerStrategy implements PlayerStrategy{
      * Called by the game engine to prompt the player to take their turn given a
      * dealt card (and returning their card they've chosen to discard).
      *
+     * will use previousDiscardedCard and opponentDiscardedCard to see what kind of cards do not fit their runMelds or
+     *      setMelds.  Accordingly, as long as this player's melds are not compromised, then player will discard card a
+     *      similar card
+     *
      * @param drawnCard The card the player was dealt
      * @return The card the player has chosen to discard
      */
@@ -69,7 +77,9 @@ public class hardPlayerStrategy implements PlayerStrategy{
         Iterator<Card> iterator2 = cardsInHand.iterator();
         Card toDiscard;
 
-        if(!deadweight.isEmpty()) {
+        //////NEED TO CHANGE THIS CODE//////
+
+        /*if(!deadweight.isEmpty()) {
             toDiscard = iterator.next();
             iterator.remove();
             while(iterator2.hasNext()) {
@@ -80,7 +90,7 @@ public class hardPlayerStrategy implements PlayerStrategy{
         } else {
             toDiscard = iterator2.next();
             iterator2.remove();
-        }
+        }*/
         return toDiscard;
     }
 
@@ -92,19 +102,19 @@ public class hardPlayerStrategy implements PlayerStrategy{
      */
     @Override
     public boolean knock() {
-        if(calculateDeadweightPoints(this.cardsInDeadweight()) <= 10) {
+        if(calculateDeadweightPoints() <= 10) {
             return true;
         }
         return false;
     }
 
     /**
-     * helper function that finds all of the deadweight cards in the current hand
+     * helper function that finds all of the deadweight cards in the current hadn
      *
      * @return deadweight cards in current hand
      */
     private Set<Card> cardsInDeadweight() {
-        Set<Card> deadweightCards = this.
+        Set<Card> deadweightCards = cardsInHand;
         Set<Card> cardsInMelds = (Set) getMelds();
         deadweightCards.removeAll(cardsInMelds);
         return deadweightCards;
@@ -115,9 +125,9 @@ public class hardPlayerStrategy implements PlayerStrategy{
      *
      * @return points in hand
      */
-    private int calculateDeadweightPoints(Set<Card> cardsInDeadweight) {
+    private int calculateDeadweightPoints() {
         int deadweightPoints = 0;
-        for(Card card: cardsInDeadweight) {
+        for(Card card: cardsInDeadweight()) {
             deadweightPoints += card.getPointValue();
         }
         return deadweightPoints;
@@ -127,20 +137,25 @@ public class hardPlayerStrategy implements PlayerStrategy{
      * Called by the game engine when the opponent has finished their turn to provide the player
      * information on what the opponent just did in their turn.
      *
+     * will continue to update remainingDeck
+     *
      * @param drewDiscard        Whether the opponent took from the discard
      * @param previousDiscardTop What the opponent could have drawn from the discard if they chose to
      * @param opponentDiscarded  The card that the opponent discarded
      */
     @Override
     public void opponentEndTurnFeedback(boolean drewDiscard, Card previousDiscardTop, Card opponentDiscarded) {
-        
+        remainingDeck.remove(opponentDiscarded);
+        previousDiscardedCard = previousDiscardTop;
+        opponentDiscardedCard = opponentDiscarded;
     }
 
     /**
      * Called by the game engine when the round has ended to provide this player strategy
      * information about their opponent's hand and selection of Melds at the end of the round.
      *
-     *
+     *don't think this bears any relevance to this player's strategy- this player will do nothing with opponent's
+     *      round feedback
      * @param opponentHand  The opponent's hand at the end of the round
      * @param opponentMelds The opponent's Melds at the end of the round
      */
