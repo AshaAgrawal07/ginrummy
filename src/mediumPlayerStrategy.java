@@ -4,10 +4,10 @@ import java.util.*;
 
 /**
  * In this strategy, the player does not care about the opponent's moves or feedback
- * player will always pick a card up from the discard pile regardless of whether or not the discarded card benefits
+ * player will never pick a card up from the discard pile regardless of whether or not the discarded card benefits
  *      the player's current melds
  */
-public class easyPlayerStrategy implements PlayerStrategy{
+public class mediumPlayerStrategy implements PlayerStrategy{
 
     private Set<Card> cardsInHand = new HashSet<>();
     private SetMeld setMeld;
@@ -36,7 +36,7 @@ public class easyPlayerStrategy implements PlayerStrategy{
      */
     @Override
     public boolean willTakeTopDiscard(Card card) {
-        return true;
+        return false;
     }
 
     /**
