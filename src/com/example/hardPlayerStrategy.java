@@ -3,15 +3,23 @@ package com.example;
 import java.util.*;
 
 /**
- * In this strategy, the player does not care about the opponent's moves or feedback
- * player will never pick a card up from the discard pile regardless of whether or not the discarded card benefits
- *      the player's current melds
+ * In this strategy, the player does care about the opponent's moves or feedback
+ * the player will also be keeping track of the remaining cards from the pick-up pile to see which move will be most
+ *      beneficial to itself, but not to its opponent
+ * player will also try to discard the least beneficial card to the opponent to the discard-pile as long as it does not
+ *      compromise its own melds (best meld that it currently has)
+ *taking point values into account, if there are multiple cards that can be discarded (which follows the restriction
+ *      placed above) then it will discard the
  */
-public class mediumPlayerStrategy implements PlayerStrategy {
+public class hardPlayerStrategy implements PlayerStrategy{
 
     private Set<Card> cardsInHand = new HashSet<>();
     private SetMeld setMeld;
     private RunMeld runMeld;
+    private Set<Meld> opponentMelds;
+    private Set<Card> opponentHand;
+    private SetMeld opponentSetMeld;
+    private RunMeld opponentRunMeld;
     /**
      * Called by the game engine for each player at the beginning of each round to receive and
      * process their initial hand dealt.
@@ -39,7 +47,8 @@ public class mediumPlayerStrategy implements PlayerStrategy {
      */
     @Override
     public boolean willTakeTopDiscard(Card card) {
-        return false;
+
+        return true;
     }
 
     /**
@@ -83,19 +92,19 @@ public class mediumPlayerStrategy implements PlayerStrategy {
      */
     @Override
     public boolean knock() {
-        if(calculateDeadweightPoints() <= 10) {
+        if(calculateDeadweightPoints(this.cardsInDeadweight()) <= 10) {
             return true;
         }
         return false;
     }
 
     /**
-     * helper function that finds all of the deadweight cards in the current hadn
+     * helper function that finds all of the deadweight cards in the current hand
      *
      * @return deadweight cards in current hand
      */
     private Set<Card> cardsInDeadweight() {
-        Set<Card> deadweightCards = cardsInHand;
+        Set<Card> deadweightCards = this.
         Set<Card> cardsInMelds = (Set) getMelds();
         deadweightCards.removeAll(cardsInMelds);
         return deadweightCards;
@@ -106,9 +115,9 @@ public class mediumPlayerStrategy implements PlayerStrategy {
      *
      * @return points in hand
      */
-    private int calculateDeadweightPoints() {
+    private int calculateDeadweightPoints(Set<Card> cardsInDeadweight) {
         int deadweightPoints = 0;
-        for(Card card: cardsInDeadweight()) {
+        for(Card card: cardsInDeadweight) {
             deadweightPoints += card.getPointValue();
         }
         return deadweightPoints;
@@ -117,8 +126,6 @@ public class mediumPlayerStrategy implements PlayerStrategy {
     /**
      * Called by the game engine when the opponent has finished their turn to provide the player
      * information on what the opponent just did in their turn.
-     *
-     * For easyPlayerStrategy, it does absolutely nothing
      *
      * @param drewDiscard        Whether the opponent took from the discard
      * @param previousDiscardTop What the opponent could have drawn from the discard if they chose to
@@ -133,14 +140,14 @@ public class mediumPlayerStrategy implements PlayerStrategy {
      * Called by the game engine when the round has ended to provide this player strategy
      * information about their opponent's hand and selection of Melds at the end of the round.
      *
-     * easyPlayerStrategy will do nothing since easyPlayer will always take from the top of the discard pile
      *
      * @param opponentHand  The opponent's hand at the end of the round
      * @param opponentMelds The opponent's Melds at the end of the round
      */
     @Override
     public void opponentEndRoundFeedback(List<Card> opponentHand, List<Meld> opponentMelds) {
-        //does nothing
+        this.opponentMelds = (Set<Meld>) opponentMelds;
+        this.opponentHand = (Set<Card>) opponentHand;
     }
 
     /**
