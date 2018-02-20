@@ -1,8 +1,7 @@
 package com.example;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * A com.example.RunMeld represents a run of three or more cards of the same suit but sequential rank. Ace is a low card only.
@@ -17,10 +16,55 @@ public class RunMeld extends Meld {
 
     private List<Card> cardsInMeld;
 
+
     protected RunMeld(Card[] initialCards) {
         super();
 
         cardsInMeld = new ArrayList<Card>(Arrays.asList(initialCards));
+    }
+
+    /**
+     * manually creates the runMelds that will be built later using the Meld class
+     *
+     * @return the list of Melds
+     */
+    public List<Meld> runMelds() {
+        List<Card> melds = new ArrayList<>();
+        List<Meld> runMeldList = new ArrayList<>();
+
+        for (Card card : cardsInMeld) {
+            melds.add(card);
+        }
+
+        //use an array to sort into ascending order
+        Card[] meldsAsArray = melds.toArray(new Card[melds.size()]);
+        Arrays.sort(meldsAsArray);
+        melds = Arrays.asList(meldsAsArray);
+
+        //I will continue to loop through the arraylist until i downsize it completely and take out all possible runMelds
+        //I am assuming that it is possible to have more than 2 runMelds in a single hand
+        while (melds.size() != 0) {
+            ArrayList<Card> meldToAdd = new ArrayList<>();
+            meldToAdd.add(melds.get(0));
+            melds.remove(0);
+
+            //check through melds to get the runMelds that I can add
+            for (Card card : melds) {
+                //check if the card can be placed +1 in relation to previous card in meldsToAdd and is the same suit
+                if (card.getSuit().equals(meldToAdd.get(0).getSuit())
+                        && card.getRankValue() == meldToAdd.get(meldToAdd.size() - 1).getRankValue() + 1) {
+                    meldToAdd.add(card);
+                } else if (card.getSuit().equals(meldToAdd.get(0).getSuit())) {
+                    melds.remove(card);
+                }
+            }
+
+            //check if it fits the size parameters of a meld; if so, then add to runMeldList
+            if (meldToAdd.size() >= MIN_CARDS) {
+                runMeldList.add(Meld.buildRunMeld(meldToAdd));
+            }
+        }
+        return runMeldList;
     }
 
     @Override

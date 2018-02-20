@@ -1,9 +1,6 @@
 package com.example;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A com.example.SetMeld represents a set of three or more cards that are of the same rank but different suit.
@@ -23,8 +20,51 @@ public class SetMeld extends Meld {
         cardsInMeld = new HashSet<Card>(initialCards);
     }
 
-    protected SetMeld(Card[] initialCards) {
-        this(Arrays.asList(initialCards));
+    /**
+     * manually creates the setMelds that will be built later using the Meld class
+     *
+     * @return the list of Melds
+     */
+    public List<Meld> setMelds() {
+        List<Card> melds = new ArrayList<>();
+        List<Meld> setMeldList = new ArrayList<>();
+
+        for (Card card : cardsInMeld) {
+            melds.add(card);
+        }
+
+        //use an array to sort into ascending order
+        Card[] meldsAsArray = melds.toArray(new Card[melds.size()]);
+        Arrays.sort(meldsAsArray);
+        melds = Arrays.asList(meldsAsArray);
+
+        //I will continue to loop through the arraylist until i downsize it completely and take out all possible runMelds
+        //I am assuming that it is possible to have more than 2 runMelds in a single hand
+        while (melds.size() != 0) {
+            ArrayList<Card> meldToAdd = new ArrayList<>();
+            meldToAdd.add(melds.get(0));
+            melds.remove(0);
+
+            //check through melds to get the runMelds that I can add
+            for (Card card : melds) {
+                //check if the card does not have the same suit as the previous card, but has the same rank
+                if (!card.getSuit().equals(meldToAdd.get(0).getSuit())
+                        && card.getRankValue() == meldToAdd.get(meldToAdd.size() - 1).getRankValue()) {
+                    meldToAdd.add(card);
+                } else if (card.getSuit().equals(meldToAdd.get(0).getSuit())) {
+                    melds.remove(card);
+                }
+            }
+
+            //check if it fits the size parameters of a meld; if so, then add to runMeldList
+            if (meldToAdd.size() >= MIN_CARDS) {
+                setMeldList.add(Meld.buildSetMeld(meldToAdd));
+            }
+        }
+        return setMeldList;
+    }
+
+    protected SetMeld(Card[] initialCards) { this(Arrays.asList(initialCards));
     }
 
     @Override

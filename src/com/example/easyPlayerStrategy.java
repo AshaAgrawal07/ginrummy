@@ -12,7 +12,9 @@ import java.util.Set;
  */
 public class easyPlayerStrategy implements PlayerStrategy{
 
-    private static Set<Card> cardsInHand = new HashSet<>();
+    private Set<Card> cardsInHand = new HashSet<>();
+    private SetMeld setMeld;
+    private RunMeld runMeld;
     /**
      * Called by the game engine for each player at the beginning of each round to receive and
      * process their initial hand dealt.
@@ -22,6 +24,10 @@ public class easyPlayerStrategy implements PlayerStrategy{
     @Override
     public void receiveInitialHand(List<Card> hand) {
         cardsInHand = (Set)hand;
+        setMeld = new SetMeld(hand);
+        setMeld.setMelds();
+        runMeld = new RunMeld(hand.toArray(new Card[hand.size()]));
+        runMeld.runMelds();
     }
 
     /**
@@ -47,14 +53,22 @@ public class easyPlayerStrategy implements PlayerStrategy{
     public Card drawAndDiscard(Card drawnCard) {
         Set<Card> deadweight = cardsInDeadweight();
         Iterator<Card> iterator = deadweight.iterator();
-        if(!deadweight.isEmpty()) {
-            Card toDiscard = iterator.next();
-            iterator.remove();
-            return toDiscard;
-        } else {
+        Iterator<Card> iterator2 = cardsInHand.iterator();
+        Card toDiscard;
 
+        if(!deadweight.isEmpty()) {
+            toDiscard = iterator.next();
+            iterator.remove();
+            while(iterator2.hasNext()) {
+                if (toDiscard.equals(iterator2.next())) {
+                    iterator2.remove();
+                }
+            }
+        } else {
+            toDiscard = iterator2.next();
+            iterator2.remove();
         }
-        return null;
+        return toDiscard;
     }
 
     /**
@@ -100,25 +114,29 @@ public class easyPlayerStrategy implements PlayerStrategy{
      * Called by the game engine when the opponent has finished their turn to provide the player
      * information on what the opponent just did in their turn.
      *
+     * For easyPlayerStrategy, it does absolutely nothing
+     *
      * @param drewDiscard        Whether the opponent took from the discard
      * @param previousDiscardTop What the opponent could have drawn from the discard if they chose to
      * @param opponentDiscarded  The card that the opponent discarded
      */
     @Override
     public void opponentEndTurnFeedback(boolean drewDiscard, Card previousDiscardTop, Card opponentDiscarded) {
-
+        //does nothing
     }
 
     /**
      * Called by the game engine when the round has ended to provide this player strategy
      * information about their opponent's hand and selection of Melds at the end of the round.
      *
+     * easyPlayerStrategy will do nothing since easyPlayer will always take from the top of the discard pile
+     *
      * @param opponentHand  The opponent's hand at the end of the round
      * @param opponentMelds The opponent's Melds at the end of the round
      */
     @Override
     public void opponentEndRoundFeedback(List<Card> opponentHand, List<Meld> opponentMelds) {
-
+        //does nothing
     }
 
     /**
@@ -128,7 +146,12 @@ public class easyPlayerStrategy implements PlayerStrategy{
      */
     @Override
     public List<Meld> getMelds() {
-        return null;
+        List<Meld> melds = new List<Meld>();
+        for (Card card: setMeld.getCards()) {
+            melds.add(card);
+        }
+        melds.add(setMeld.getCards());
+        melds.add(runMeld.getCards());
     }
 
     /**
@@ -137,6 +160,7 @@ public class easyPlayerStrategy implements PlayerStrategy{
      */
     @Override
     public void reset() {
-
+        cardsInHand.removeAll(cardsInHand);
+        
     }
 }
