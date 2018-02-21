@@ -53,8 +53,8 @@ public class GameEngine {
      */
     public static int getWinner(Stack<Card> hand1, PlayerStrategy ps1, Stack<Card> hand2, PlayerStrategy ps2) {
         int ps1DWP = calculateDeadweightPoints(hand1, ps1);
-        int ps2SWP = calculateDeadweightPoints(hand2, ps2);
-        return ps1DWP - ps2SWP;
+        int ps2DWP = calculateDeadweightPoints(hand2, ps2);
+        return ps1DWP - ps2DWP;
     }
 
 
