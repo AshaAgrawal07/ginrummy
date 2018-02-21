@@ -33,6 +33,7 @@ public class easyPlayerStrategyTest {
     @Test
     public void getWillTakeTopDiscard() {
         Assertions.assertEquals(true, eps1.willTakeTopDiscard(discardPile.peek()));
+        Assertions.assertEquals(false, eps1.willTakeTopDiscard(null));
     }
 
     @Test
