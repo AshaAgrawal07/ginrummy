@@ -25,34 +25,36 @@ public class SetMeld extends Meld {
      *
      * @return the list of Melds
      */
-    public List<Meld> setMelds() {
-        List<Card> melds = new ArrayList<>();
+    public List<Meld> setMelds(List<Card> cards) {
+        //ArrayList<Card> melds = new ArrayList<>();
         List<Meld> setMeldList = new ArrayList<>();
+        ArrayList<Card> hand = new ArrayList<>(cards);
 
-        for (Card card : cardsInMeld) {
+        /*for (Card card : cardsInMeld) {
             melds.add(card);
-        }
+        }*/
 
         //use an array to sort into ascending order
-        Card[] meldsAsArray = melds.toArray(new Card[melds.size()]);
-        Arrays.sort(meldsAsArray);
-        melds = Arrays.asList(meldsAsArray);
+        Card[] cardsAsArray = cards.toArray(new Card[cards.size()]);
+        Arrays.sort(cardsAsArray);
+        //melds = (Arrays.asList(meldsAsArray));
+        //melds.addAll(Arrays.asList(cardsAsArray));
 
         //I will continue to loop through the arraylist until i downsize it completely and take out all possible runMelds
         //I am assuming that it is possible to have more than 2 runMelds in a single hand
-        while (melds.size() != 0) {
+        while (hand.size() != 0) {
             ArrayList<Card> meldToAdd = new ArrayList<>();
-            meldToAdd.add(melds.get(0));
-            melds.remove(0);
+            meldToAdd.add(hand.get(0));
+            hand.remove(0);
 
-            //check through melds to get the runMelds that I can add
-            for (Card card : melds) {
+            //check through melds to get the setMelds that I can add
+            for (Card card : hand) {
                 //check if the card does not have the same suit as the previous card, but has the same rank
                 if (!card.getSuit().equals(meldToAdd.get(0).getSuit())
                         && card.getRankValue() == meldToAdd.get(meldToAdd.size() - 1).getRankValue()) {
                     meldToAdd.add(card);
                 } else if (card.getSuit().equals(meldToAdd.get(0).getSuit())) {
-                    melds.remove(card);
+                    hand.remove(card);
                 }
             }
 

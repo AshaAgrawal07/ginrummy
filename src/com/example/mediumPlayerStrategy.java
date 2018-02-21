@@ -22,10 +22,10 @@ public class mediumPlayerStrategy implements PlayerStrategy {
     public void receiveInitialHand(List<Card> hand) {
         Card[] handAsArray = hand.toArray(new Card[hand.size()]);
         Arrays.sort(handAsArray);
-        cardsInHand = (Set)(Arrays.asList(handAsArray));
+        cardsInHand = new HashSet<>(Arrays.asList(handAsArray));
 
         setMeld = new SetMeld(hand);
-        setMeld.setMelds();
+        setMeld.setMelds(hand);
         runMeld = new RunMeld(hand.toArray(new Card[hand.size()]));
         runMeld.runMelds();
     }

@@ -30,10 +30,10 @@ public class hardPlayerStrategy implements PlayerStrategy {
     public void receiveInitialHand(List<Card> hand) {
         Card[] handAsArray = hand.toArray(new Card[hand.size()]);
         Arrays.sort(handAsArray);
-        cardsInHand = (Set) (Arrays.asList(handAsArray));
+        cardsInHand = new HashSet<>(Arrays.asList(handAsArray));
 
         setMeld = new SetMeld(hand);
-        setMeld.setMelds();
+        setMeld.setMelds(hand);
         runMeld = new RunMeld(hand.toArray(new Card[hand.size()]));
         runMeld.runMelds();
     }
@@ -48,6 +48,7 @@ public class hardPlayerStrategy implements PlayerStrategy {
     @Override
     public boolean willTakeTopDiscard(Card card) {
         int maxMeldLength = 0;
+        List<Card> list = new ArrayList<>(cardsInHand);
 
         for (Meld runs : runMeld.runMelds()) {
             if (runs.canAppendCard(card)) {
@@ -57,7 +58,7 @@ public class hardPlayerStrategy implements PlayerStrategy {
             }
         }
 
-        for (Meld runs : setMeld.setMelds()) {
+        for (Meld runs : setMeld.setMelds(list)) {
             if (runs.canAppendCard(card)) {
                 if (((Set) runs).size() > maxMeldLength) {
                     maxMeldLength = ((Set) runs).size();
@@ -91,6 +92,7 @@ public class hardPlayerStrategy implements PlayerStrategy {
     @Override
     public Card drawAndDiscard(Card drawnCard) {
         cardsInHand.add(drawnCard);
+        List<Card> list = new ArrayList<>(cardsInHand);
         //add to all possible melds
         for (Meld runs : runMeld.runMelds()) {
             if (runs.canAppendCard(drawnCard)) {
@@ -98,7 +100,7 @@ public class hardPlayerStrategy implements PlayerStrategy {
             }
         }
 
-        for (Meld runs : setMeld.setMelds()) {
+        for (Meld runs : setMeld.setMelds(list)) {
             if (runs.canAppendCard(drawnCard)) {
                 runs.appendCard(drawnCard);
             }

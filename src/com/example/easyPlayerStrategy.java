@@ -22,10 +22,10 @@ public class easyPlayerStrategy implements PlayerStrategy{
     public void receiveInitialHand(List<Card> hand) {
         Card[] handAsArray = hand.toArray(new Card[hand.size()]);
         Arrays.sort(handAsArray);
-        cardsInHand = (Set)(Arrays.asList(handAsArray));
+        cardsInHand = new HashSet<>(Arrays.asList(handAsArray));
 
         setMeld = new SetMeld(hand);
-        setMeld.setMelds();
+        setMeld.setMelds(hand);
         runMeld = new RunMeld(hand.toArray(new Card[hand.size()]));
         runMeld.runMelds();
     }
@@ -94,7 +94,7 @@ public class easyPlayerStrategy implements PlayerStrategy{
      *
      * @return deadweight cards in current hand
      */
-    public Set<Card> cardsInDeadweight() {
+    private Set<Card> cardsInDeadweight() {
         Set<Card> deadweightCards = cardsInHand;
         Set<Card> cardsInMelds = (Set) getMelds();
         deadweightCards.removeAll(cardsInMelds);
@@ -106,7 +106,7 @@ public class easyPlayerStrategy implements PlayerStrategy{
      *
      * @return points in hand
      */
-    public int calculateDeadweightPoints() {
+    private int calculateDeadweightPoints() {
         int deadweightPoints = 0;
         for(Card card: cardsInDeadweight()) {
             deadweightPoints += card.getPointValue();

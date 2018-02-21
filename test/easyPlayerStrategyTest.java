@@ -12,10 +12,12 @@ public class easyPlayerStrategyTest {
     private ArrayList<Card> deck =(ArrayList<Card>) Card.getAllCards();
     private List<Card> hand = new ArrayList<>();
 
-    hand.add(deck.get(0));
+    //hand.add(deck.get(0));
 
 
     @Test
-    public void
+    public void getStuff() {
+
+    }
 
 }
