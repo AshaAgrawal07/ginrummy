@@ -39,6 +39,9 @@ public class easyPlayerStrategy implements PlayerStrategy{
      */
     @Override
     public boolean willTakeTopDiscard(Card card) {
+        if (card == null) {
+            return false;
+        }
         return true;
     }
 

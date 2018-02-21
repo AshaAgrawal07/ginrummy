@@ -47,6 +47,9 @@ public class hardPlayerStrategy implements PlayerStrategy {
      */
     @Override
     public boolean willTakeTopDiscard(Card card) {
+        if(card == null) {
+            return false;
+        }
         int maxMeldLength = 0;
         List<Card> list = new ArrayList<>(cardsInHand);
 
