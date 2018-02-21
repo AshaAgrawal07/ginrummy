@@ -5,23 +5,22 @@ import java.util.*;
 /**
  * In this strategy, the player does care about the opponent's moves or feedback
  * the player will also be keeping track of the remaining cards from the pick-up pile to see which move will be most
- *      beneficial to itself, but not to its opponent (its kind of guessed since player doesn't see opponent's melds
- *      until the end of the round)
+ * beneficial to itself, but not to its opponent (its kind of guessed since player doesn't see opponent's melds
+ * until the end of the round)
  * player will also try to discard the least beneficial card to the opponent to the discard-pile as long as it does not
- *      compromise its own melds (best meld that it currently has)
- *taking point values into account, if there are multiple cards that can be discarded (which follows the restriction
- *      placed above) then it will discard the
+ * compromise its own melds (best meld that it currently has)
+ * taking point values into account, if there are multiple cards that can be discarded (which follows the restriction
+ * placed above) then it will discard the
  */
-public class hardPlayerStrategy implements PlayerStrategy{
+public class hardPlayerStrategy implements PlayerStrategy {
 
     private Set<Card> cardsInHand = new HashSet<>();
     private SetMeld setMeld;
     private RunMeld runMeld;
-    private Set<Meld> opponentMelds;
-    private Set<Card> opponentHand;
     private Set<Card> remainingDeck = Card.getAllCards();
-    private Card previousDiscardedCard;
-    private Card opponentDiscardedCard;
+    private Card previousDiscardedCard = null;
+    private Card opponentDiscardedCard = null;
+
     /**
      * Called by the game engine for each player at the beginning of each round to receive and
      * process their initial hand dealt.
@@ -32,7 +31,7 @@ public class hardPlayerStrategy implements PlayerStrategy{
     public void receiveInitialHand(List<Card> hand) {
         Card[] handAsArray = hand.toArray(new Card[hand.size()]);
         Arrays.sort(handAsArray);
-        cardsInHand = (Set)(Arrays.asList(handAsArray));
+        cardsInHand = (Set) (Arrays.asList(handAsArray));
 
         remainingDeck.removeAll(hand);
 
@@ -51,46 +50,90 @@ public class hardPlayerStrategy implements PlayerStrategy{
      */
     @Override
     public boolean willTakeTopDiscard(Card card) {
+        remainingDeck.remove(card);
+        int maxMeldLength = 0;
 
+        for (Meld runs : runMeld.runMelds()) {
+            if (runs.canAppendCard(card)) {
+                if (((Set) runs).size() > maxMeldLength) {
+                    maxMeldLength = ((Set) runs).size();
+                }
+            }
+        }
+
+        for (Meld runs : setMeld.setMelds()) {
+            if (runs.canAppendCard(card)) {
+                if (((Set) runs).size() > maxMeldLength) {
+                    maxMeldLength = ((Set) runs).size();
+                }
+            }
+        }
+
+        if(maxMeldLength == 0) {
+            return false;
+        }
         return true;
     }
 
     /**
      * Called by the game engine to prompt the player to take their turn given a
      * dealt card (and returning their card they've chosen to discard).
-     *
+     * <p>
      * will use previousDiscardedCard and opponentDiscardedCard to see what kind of cards do not fit their runMelds or
-     *      setMelds.  Accordingly, as long as this player's melds are not compromised, then player will discard card a
-     *      similar card
+     * setMelds.  Accordingly, as long as this player's melds are not compromised, then player will discard card a
+     * similar card
+     * <p>
+     * want to ask myself:
+     * 1. why did the opponent not need the previousDiscardedCard?
+     * 2. why did the opponent need the opponentDiscardedCard?
+     * this means, I get info on 2 melds that the opponent in not building (which also means 4 melds in total if we
+     * take into account that they are also setMelds and runMelds
      *
      * @param drawnCard The card the player was dealt
      * @return The card the player has chosen to discard
      */
     @Override
     public Card drawAndDiscard(Card drawnCard) {
-        //add to melds
-        if(runMeld.canAppendCard(drawnCard)) { runMeld.appendCard(drawnCard);}
-        if(setMeld.canAppendCard(drawnCard)) { setMeld.appendCard(drawnCard);}
+        cardsInHand.add(drawnCard);
+        //add to all possible melds
+        for (Meld runs : runMeld.runMelds()) {
+            if (runs.canAppendCard(drawnCard)) {
+                runs.appendCard(drawnCard);
+            }
+        }
+
+        for (Meld runs : setMeld.setMelds()) {
+            if (runs.canAppendCard(drawnCard)) {
+                runs.appendCard(drawnCard);
+            }
+        }
 
         Set<Card> deadweight = cardsInDeadweight();
         Iterator<Card> iterator = deadweight.iterator();
         Iterator<Card> iterator2 = cardsInHand.iterator();
-        Card toDiscard;
+        Card toDiscard = null;
 
-        //////NEED TO CHANGE THIS CODE//////
-
-        /*if(!deadweight.isEmpty()) {
-            toDiscard = iterator.next();
-            iterator.remove();
-            while(iterator2.hasNext()) {
-                if (toDiscard.equals(iterator2.next())) {
-                    iterator2.remove();
-                }
+        for(Card card: deadweight) {
+            //check that the new card does not fit into meld definitions with either of the discarded cards
+            if(!(card.getSuit().equals(previousDiscardedCard.getSuit()) &&
+                    (card.getRankValue() == previousDiscardedCard.getRankValue() + 1) ||
+                        card.getRankValue() == previousDiscardedCard.getRankValue() - 1)&&
+                    !(card.getSuit().equals(opponentDiscardedCard.getSuit()) &&
+                            (card.getRankValue() == opponentDiscardedCard.getRankValue() + 1) ||
+                                card.getRankValue() == opponentDiscardedCard.getRankValue() - 1) &&
+                    !card.getRank().equals(opponentDiscardedCard.getRank()) &&
+                    !card.getRank().equals(previousDiscardedCard.getRank())) {
+                //toDiscard will continuously update until the highest value that I can discard is set to it
+                toDiscard = card;
             }
-        } else {
-            toDiscard = iterator2.next();
-            iterator2.remove();
-        }*/
+        }
+        //if there is no such card, then I will remove the greatest value card that I have and hope that I don't disrupt a meld
+        if (toDiscard == null) {
+            toDiscard = (Card)((TreeSet) cardsInHand).last();
+            cardsInHand.remove(toDiscard);
+        }
+        //update all melds since a meld of size 3 could've been disrupted and resort hand
+        receiveInitialHand((List)cardsInHand);
         return toDiscard;
     }
 
@@ -102,7 +145,7 @@ public class hardPlayerStrategy implements PlayerStrategy{
      */
     @Override
     public boolean knock() {
-        if(calculateDeadweightPoints() <= 10) {
+        if (calculateDeadweightPoints() <= 10) {
             return true;
         }
         return false;
@@ -127,7 +170,7 @@ public class hardPlayerStrategy implements PlayerStrategy{
      */
     private int calculateDeadweightPoints() {
         int deadweightPoints = 0;
-        for(Card card: cardsInDeadweight()) {
+        for (Card card : cardsInDeadweight()) {
             deadweightPoints += card.getPointValue();
         }
         return deadweightPoints;
@@ -136,7 +179,7 @@ public class hardPlayerStrategy implements PlayerStrategy{
     /**
      * Called by the game engine when the opponent has finished their turn to provide the player
      * information on what the opponent just did in their turn.
-     *
+     * <p>
      * will continue to update remainingDeck
      *
      * @param drewDiscard        Whether the opponent took from the discard
@@ -153,16 +196,16 @@ public class hardPlayerStrategy implements PlayerStrategy{
     /**
      * Called by the game engine when the round has ended to provide this player strategy
      * information about their opponent's hand and selection of Melds at the end of the round.
+     * <p>
+     * don't think this bears any relevance to this player's strategy- this player will do nothing with opponent's
+     * round feedback
      *
-     *don't think this bears any relevance to this player's strategy- this player will do nothing with opponent's
-     *      round feedback
      * @param opponentHand  The opponent's hand at the end of the round
      * @param opponentMelds The opponent's Melds at the end of the round
      */
     @Override
     public void opponentEndRoundFeedback(List<Card> opponentHand, List<Meld> opponentMelds) {
-        this.opponentMelds = (Set<Meld>) opponentMelds;
-        this.opponentHand = (Set<Card>) opponentHand;
+        //does nothing
     }
 
     /**
