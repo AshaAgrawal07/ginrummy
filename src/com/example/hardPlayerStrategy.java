@@ -35,7 +35,7 @@ public class hardPlayerStrategy implements PlayerStrategy {
         setMeld = new SetMeld(hand);
         setMeld.setMelds(hand);
         runMeld = new RunMeld(hand.toArray(new Card[hand.size()]));
-        runMeld.runMelds();
+        runMeld.runMelds(hand);
     }
 
     /**
@@ -50,7 +50,7 @@ public class hardPlayerStrategy implements PlayerStrategy {
         int maxMeldLength = 0;
         List<Card> list = new ArrayList<>(cardsInHand);
 
-        for (Meld runs : runMeld.runMelds()) {
+        for (Meld runs : runMeld.runMelds(list)) {
             if (runs.canAppendCard(card)) {
                 if (((Set) runs).size() > maxMeldLength) {
                     maxMeldLength = ((Set) runs).size();
@@ -94,7 +94,7 @@ public class hardPlayerStrategy implements PlayerStrategy {
         cardsInHand.add(drawnCard);
         List<Card> list = new ArrayList<>(cardsInHand);
         //add to all possible melds
-        for (Meld runs : runMeld.runMelds()) {
+        for (Meld runs : runMeld.runMelds(list)) {
             if (runs.canAppendCard(drawnCard)) {
                 runs.appendCard(drawnCard);
             }

@@ -26,19 +26,12 @@ public class SetMeld extends Meld {
      * @return the list of Melds
      */
     public List<Meld> setMelds(List<Card> cards) {
-        //ArrayList<Card> melds = new ArrayList<>();
         List<Meld> setMeldList = new ArrayList<>();
         ArrayList<Card> hand = new ArrayList<>(cards);
-
-        /*for (Card card : cardsInMeld) {
-            melds.add(card);
-        }*/
 
         //use an array to sort into ascending order
         Card[] cardsAsArray = cards.toArray(new Card[cards.size()]);
         Arrays.sort(cardsAsArray);
-        //melds = (Arrays.asList(meldsAsArray));
-        //melds.addAll(Arrays.asList(cardsAsArray));
 
         //I will continue to loop through the arraylist until i downsize it completely and take out all possible runMelds
         //I am assuming that it is possible to have more than 2 runMelds in a single hand

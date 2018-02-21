@@ -28,34 +28,34 @@ public class RunMeld extends Meld {
      *
      * @return the list of Melds
      */
-    public List<Meld> runMelds() {
-        List<Card> melds = new ArrayList<>();
+    public List<Meld> runMelds(List<Card> cards) {
+        List<Card> hand = new ArrayList<>(cards);
         List<Meld> runMeldList = new ArrayList<>();
 
         for (Card card : cardsInMeld) {
-            melds.add(card);
+            hand.add(card);
         }
 
         //use an array to sort into ascending order
-        Card[] meldsAsArray = melds.toArray(new Card[melds.size()]);
+        Card[] meldsAsArray = hand.toArray(new Card[hand.size()]);
         Arrays.sort(meldsAsArray);
-        melds = Arrays.asList(meldsAsArray);
+        hand = Arrays.asList(meldsAsArray);
 
         //I will continue to loop through the arraylist until i downsize it completely and take out all possible runMelds
         //I am assuming that it is possible to have more than 2 runMelds in a single hand
-        while (melds.size() != 0) {
+        while (hand.size() != 0) {
             ArrayList<Card> meldToAdd = new ArrayList<>();
-            meldToAdd.add(melds.get(0));
-            melds.remove(0);
+            meldToAdd.add(hand.get(0));
+            hand.remove(0);
 
             //check through melds to get the runMelds that I can add
-            for (Card card : melds) {
+            for (Card card : hand) {
                 //check if the card can be placed +1 in relation to previous card in meldsToAdd and is the same suit
                 if (card.getSuit().equals(meldToAdd.get(0).getSuit())
                         && card.getRankValue() == meldToAdd.get(meldToAdd.size() - 1).getRankValue() + 1) {
                     meldToAdd.add(card);
                 } else if (card.getSuit().equals(meldToAdd.get(0).getSuit())) {
-                    melds.remove(card);
+                    hand.remove(card);
                 }
             }
 

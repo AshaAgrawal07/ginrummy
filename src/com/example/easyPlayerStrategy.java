@@ -27,7 +27,7 @@ public class easyPlayerStrategy implements PlayerStrategy{
         setMeld = new SetMeld(hand);
         setMeld.setMelds(hand);
         runMeld = new RunMeld(hand.toArray(new Card[hand.size()]));
-        runMeld.runMelds();
+        runMeld.runMelds(hand);
     }
 
     /**
