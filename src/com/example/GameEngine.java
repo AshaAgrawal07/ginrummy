@@ -9,6 +9,11 @@ public class GameEngine {
     final static int POINTS_THRESHOLD = 50;
     final static int ROUNDS = 1000;
 
+    /**
+     *
+     * @param deck the stack of cards that needs to be shuffled
+     * @return the shuffled deck
+     */
     public static Stack<Card> shuffle(Stack<Card> deck) {
         Card[] deckToArray = deck.toArray(new Card[deck.size()]);
         //i used this link to find out how to shuffle: https://www.geeksforgeeks.org/shuffle-a-deck-of-cards-3/
@@ -28,6 +33,12 @@ public class GameEngine {
     }
 
 
+    /**
+     *
+     * @param hand the hand of cards which we are trying to find the deadweight cards of
+     * @param ps the player we are determining for
+     * @return
+     */
     private static Set<Card> cardsInDeadweight(Stack<Card> hand, PlayerStrategy ps) {
         Set<Card> deadweightCards = (Set) hand;
         Set<Card> cardsInMelds = (Set) ps.getMelds();
@@ -35,6 +46,12 @@ public class GameEngine {
         return deadweightCards;
     }
 
+    /**
+     *
+     * @param hand the hand of cards which we are trying to find the deadweight points of
+     * @param ps the player we are determining for
+     * @return
+     */
     private static int calculateDeadweightPoints(Stack<Card> hand, PlayerStrategy ps) {
         int deadweightPoints = 0;
         for (Card card : cardsInDeadweight(hand, ps)) {
