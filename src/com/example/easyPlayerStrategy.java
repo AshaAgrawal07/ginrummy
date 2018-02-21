@@ -94,7 +94,7 @@ public class easyPlayerStrategy implements PlayerStrategy{
      *
      * @return deadweight cards in current hand
      */
-    private Set<Card> cardsInDeadweight() {
+    public Set<Card> cardsInDeadweight() {
         Set<Card> deadweightCards = cardsInHand;
         Set<Card> cardsInMelds = (Set) getMelds();
         deadweightCards.removeAll(cardsInMelds);
@@ -106,7 +106,7 @@ public class easyPlayerStrategy implements PlayerStrategy{
      *
      * @return points in hand
      */
-    private int calculateDeadweightPoints() {
+    public int calculateDeadweightPoints() {
         int deadweightPoints = 0;
         for(Card card: cardsInDeadweight()) {
             deadweightPoints += card.getPointValue();

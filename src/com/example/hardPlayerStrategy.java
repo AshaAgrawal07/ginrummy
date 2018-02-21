@@ -17,7 +17,6 @@ public class hardPlayerStrategy implements PlayerStrategy {
     private Set<Card> cardsInHand = new HashSet<>();
     private SetMeld setMeld;
     private RunMeld runMeld;
-    private Set<Card> remainingDeck = Card.getAllCards();
     private Card previousDiscardedCard = null;
     private Card opponentDiscardedCard = null;
 
@@ -32,8 +31,6 @@ public class hardPlayerStrategy implements PlayerStrategy {
         Card[] handAsArray = hand.toArray(new Card[hand.size()]);
         Arrays.sort(handAsArray);
         cardsInHand = (Set) (Arrays.asList(handAsArray));
-
-        remainingDeck.removeAll(hand);
 
         setMeld = new SetMeld(hand);
         setMeld.setMelds();
@@ -50,7 +47,6 @@ public class hardPlayerStrategy implements PlayerStrategy {
      */
     @Override
     public boolean willTakeTopDiscard(Card card) {
-        remainingDeck.remove(card);
         int maxMeldLength = 0;
 
         for (Meld runs : runMeld.runMelds()) {
@@ -179,8 +175,6 @@ public class hardPlayerStrategy implements PlayerStrategy {
     /**
      * Called by the game engine when the opponent has finished their turn to provide the player
      * information on what the opponent just did in their turn.
-     * <p>
-     * will continue to update remainingDeck
      *
      * @param drewDiscard        Whether the opponent took from the discard
      * @param previousDiscardTop What the opponent could have drawn from the discard if they chose to
@@ -188,7 +182,6 @@ public class hardPlayerStrategy implements PlayerStrategy {
      */
     @Override
     public void opponentEndTurnFeedback(boolean drewDiscard, Card previousDiscardTop, Card opponentDiscarded) {
-        remainingDeck.remove(opponentDiscarded);
         previousDiscardedCard = previousDiscardTop;
         opponentDiscardedCard = opponentDiscarded;
     }

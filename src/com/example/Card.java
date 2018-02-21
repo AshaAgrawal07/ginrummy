@@ -1,8 +1,6 @@
 package com.example;
 
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class Card implements Comparable<Card> {
