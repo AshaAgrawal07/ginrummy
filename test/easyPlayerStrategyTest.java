@@ -25,9 +25,8 @@ public class easyPlayerStrategyTest {
         for (int j = 0; j < 10; j++) {
             playerHand.push(deck.pop());
         }
-
-        eps1.receiveInitialHand(playerHand);
-        discardPile.push(deck.pop());
+        List<Card> hand = (List) playerHand;
+        eps1.receiveInitialHand((hand));
     }
     //hand.add(deck.get(0));
 

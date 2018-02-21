@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
 
-public class mediumPlayerStrategy {
+public class mediumPlayerStrategyTest {
     private static mediumPlayerStrategy eps1 = new mediumPlayerStrategy();
     private static List<Card> deckAsList = new ArrayList<Card>(Card.getAllCards());
     private static Stack<Card> deck = new Stack<>();
@@ -24,15 +24,15 @@ public class mediumPlayerStrategy {
         for (int j = 0; j < 10; j++) {
             playerHand.push(deck.pop());
         }
-
-        eps1.receiveInitialHand(playerHand);
+        List<Card> hand = (List) playerHand;
+        eps1.receiveInitialHand((hand));
         discardPile.push(deck.pop());
     }
     //hand.add(deck.get(0));
 
     @Test
     public void getWillTakeTopDiscard() {
-        Assertions.assertEquals(true, eps1.willTakeTopDiscard(discardPile.peek()));
+        Assertions.assertEquals(false, eps1.willTakeTopDiscard(discardPile.peek()));
     }
 
     @Test

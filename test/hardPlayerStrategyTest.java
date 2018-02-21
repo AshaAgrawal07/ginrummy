@@ -26,7 +26,7 @@ public class hardPlayerStrategyTest {
             playerHand.push(deck.pop());
         }
         List<Card> hand = (List) playerHand;
-        eps1.recieveInitialHand((hand));
+        eps1.receiveInitialHand((hand));
         discardPile.push(deck.pop());
     }
     //hand.add(deck.get(0));
@@ -34,7 +34,22 @@ public class hardPlayerStrategyTest {
 
     @Test
     public void getWillTakeTopDiscard() {
-        Assertions.assertEquals(false, eps1.WillTakeTopDiscard(discardPile.peek()));
+        Assertions.assertEquals(true, eps1.willTakeTopDiscard(discardPile.peek()));
     }
 
+    @Test
+    public void drawAndDiscardTest() {
+        Card toDiscard = playerHand.firstElement();
+        Assertions.assertEquals(toDiscard, eps1.drawAndDiscard(discardPile.pop()));
+    }
+
+    @Test
+    public void knockTest() {
+        Assertions.assertEquals(true, eps1.knock());
+    }
+
+    @Test
+    public void getMeldsTest() {
+        Assertions.assertEquals(playerHand, eps1.getMelds());
+    }
 }
