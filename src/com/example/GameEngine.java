@@ -62,6 +62,7 @@ public class GameEngine {
     public static void main(String[] args) {
         //EASY VS MEDIUM
         for (int i = 0; i < ROUNDS; i++) {
+            //the playerStrategies can be switched around to compete with the other ones.
             PlayerStrategy ps1 = new easyPlayerStrategy();
             PlayerStrategy ps2 = new mediumPlayerStrategy();
             int player1Points = 0;
@@ -153,10 +154,12 @@ public class GameEngine {
                 }
 
                 if (player1Points >= POINTS_THRESHOLD) {
-                    System.out.println("Winner: player1 " + firstPlayer.getMelds());
+                    System.out.println("Winner: player1 ");
+                    firstPlayer.opponentEndRoundFeedback(player1Hand, firstPlayer.getMelds());
                 }
                 if (player2Points >= POINTS_THRESHOLD) {
-                    System.out.println("Winner: player2 " + secondPlayer.getMelds());
+                    System.out.println("Winner: player2 ");
+                    secondPlayer.opponentEndRoundFeedback(player2Hand, secondPlayer.getMelds());
                 }
             }
         }

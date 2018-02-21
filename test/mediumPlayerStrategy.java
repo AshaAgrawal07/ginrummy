@@ -1,7 +1,7 @@
 import com.example.Card;
 import com.example.GameEngine;
 import com.example.PlayerStrategy;
-import com.example.easyPlayerStrategy;
+import com.example.mediumPlayerStrategy;
 import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,9 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.*;
 
-public class easyPlayerStrategyTest {
-
-    private static easyPlayerStrategy eps1 = new easyPlayerStrategy();
+public class mediumPlayerStrategy {
+    private static mediumPlayerStrategy eps1 = new mediumPlayerStrategy();
     private static List<Card> deckAsList = new ArrayList<Card>(Card.getAllCards());
     private static Stack<Card> deck = new Stack<>();
     private static Stack<Card> playerHand = new Stack<>();
